@@ -1,12 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using AuditoriaDocumental.Api.Datos;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.RateLimiting; // para el escudo antispam
 using System.Threading.RateLimiting; // para configurar los tiempos del limite
+using AuditoriaDocumental.Api.Servicios; // anadimos esto para que reconozca la clase de la ia
 
 var builder = WebApplication.CreateBuilder(args);
 
 // le decimos al proyecto que vamos a usar controladores para las rutas
-builder.Services.AddControllers();
+// y configuramos el serializador de JSON para que ignore los bucles infinitos de Entity Framework
+builder.Services.AddControllers().AddJsonOptions(opciones =>
+{
+    opciones.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 // agregamos los servicios necesarios para que funcione swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -15,6 +21,9 @@ builder.Services.AddSwaggerGen();
 // configuracion de la base de datos que hicimos antes
 builder.Services.AddDbContext<AppDbContext>(opciones =>
     opciones.UseSqlServer(builder.Configuration.GetConnectionString("ConexionSQL")));
+
+// registramos el cerebro de la ia para que el controlador pueda usarlo
+builder.Services.AddScoped<ServicioExtraccionIA>();
 
 // configuramos el limite de peticiones para no arruinarnos con azure
 builder.Services.AddRateLimiter(options =>
@@ -45,7 +54,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // activamos el limitador antispam justo antes de mapear los controladores
-app.UseRateLimiter(); 
+app.UseRateLimiter();
 
 // activamos el mapeo de los controladores
 app.MapControllers();
