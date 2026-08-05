@@ -81,7 +81,7 @@ export class App implements OnInit {
       error: (err) => {
         // capturamos los bloqueos de seguridad del backend (rate limiting, etc)
         if (err.status === 429) {
-          this.error = 'has alcanzado el límite de seguridad anti-bots. por favor, espera un minuto.';
+          this.error = 'has alcanzado el límite de seguridad anti-bots. por favor, espera una hora para volver a intentarlo.';
         } else if (err.status === 500) {
           this.error = 'la inteligencia artificial no ha podido analizar este documento. asegúrate de que es una factura válida y legible.';
         } else {
