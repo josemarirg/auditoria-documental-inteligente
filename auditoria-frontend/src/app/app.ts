@@ -60,6 +60,12 @@ export class App implements OnInit {
   subir() {
     if (!this.archivoSeleccionado) return;
 
+    // comprobamos el peso antes de llamar al backend
+    if (this.archivoSeleccionado.size > 2097152) {
+      this.error = 'el archivo es demasiado grande. el límite máximo es de 2mb.';
+      return; 
+    }
+
     this.cargando = true;
     this.error = '';
     this.resultado = null;
@@ -69,11 +75,19 @@ export class App implements OnInit {
       next: (respuesta) => {
         this.resultado = respuesta; 
         this.cargando = false;
-        this.cargarHistorial(); // actualiza la tabla con el nuevo documento automaticamente
+        this.cargarHistorial(); 
         this.cdr.detectChanges(); 
       },
       error: (err) => {
-        this.error = 'error de conexion con el servidor.';
+        // capturamos los bloqueos de seguridad del backend (rate limiting, etc)
+        if (err.status === 429) {
+          this.error = 'has alcanzado el límite de seguridad anti-bots. por favor, espera un minuto.';
+        } else if (err.status === 500) {
+          this.error = 'la inteligencia artificial no ha podido analizar este documento. asegúrate de que es una factura válida y legible.';
+        } else {
+          this.error = 'error de conexión. revisa si el servidor está encendido.';
+        }
+        
         console.error(err);
         this.cargando = false;
         this.cdr.detectChanges(); 

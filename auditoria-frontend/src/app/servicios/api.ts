@@ -16,9 +16,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/upload`, formData);
   }
 
-  // pide las ultimas facturas procesadas
+  // pide las ultimas facturas forzando al navegador a no usar la cache
   obtenerHistorial() {
-    return this.http.get(`${this.baseUrl}/historial`);
+    const timestamp = new Date().getTime();
+    return this.http.get(`${this.baseUrl}/historial?t=${timestamp}`);
   }
 
   // borra todos los datos de prueba

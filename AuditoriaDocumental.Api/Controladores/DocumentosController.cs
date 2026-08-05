@@ -55,7 +55,7 @@ public class DocumentosController : ControllerBase
 
     [HttpPost("upload")]
     [EnableRateLimiting("limiteSubida")] // escudo activo: evita que saturen la api y te cobren en openai/azure
-    [RequestSizeLimit(5242880)] // seguridad extra: limite estricto de 5mb por archivo
+    [RequestSizeLimit(2097152)] // limite estricto 2mb por archivo
     public async Task<IActionResult> UploadDocumento(IFormFile archivo)
     {
         if (archivo == null || archivo.Length == 0)
