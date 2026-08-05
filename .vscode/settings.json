@@ -1,0 +1,4 @@
+{
+    "appService.preDeployTask": "publish-release",
+    "appService.deploySubpath": "AuditoriaDocumental.Api/bin/Release/net9.0/publish"
+}

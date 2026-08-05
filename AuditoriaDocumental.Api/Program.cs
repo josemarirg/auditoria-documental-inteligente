@@ -58,11 +58,11 @@ builder.Services.AddRateLimiter(options =>
 var app = builder.Build();
 
 // activamos la interfaz web de swagger en desarrollo
-if (app.Environment.IsDevelopment())
-{
+// quito el if para probas, ya que al desplegar azure lo quita
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 // aplicamos el permiso de cors (debe ir antes del rate limiter y los controladores)
 app.UseCors("PermitirAngular");
