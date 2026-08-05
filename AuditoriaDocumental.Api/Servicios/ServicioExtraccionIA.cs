@@ -3,7 +3,6 @@ namespace AuditoriaDocumental.Api.Servicios;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Text.Json;
 using Azure;
 using Azure.AI.FormRecognizer.DocumentAnalysis;
 using Microsoft.Extensions.Configuration;
@@ -30,8 +29,7 @@ public class ServicioExtraccionIA
         // nos aseguramos de que leemos el pdf desde el principio
         archivoStream.Position = 0;
 
-        // le mandamos el archivo al modelo pre-entrenado de facturas ('prebuilt-invoice')
-        // este modelo ya sabe lo que es un proveedor, un importe y un iva, no hay que explicarle nada
+        // le mandamos el archivo al modelo pre-entrenado de facturas
         var operacion = await cliente.AnalyzeDocumentAsync(WaitUntil.Completed, "prebuilt-invoice", archivoStream);
         var resultado = operacion.Value;
 
@@ -49,10 +47,17 @@ public class ServicioExtraccionIA
                 extraccion.Proveedor = campoProveedor.Value.AsString();
             }
 
-            // buscamos el importe total
-            if (documentoInfo.Fields.TryGetValue("InvoiceTotal", out DocumentField? campoTotal) && campoTotal.FieldType == DocumentFieldType.Double)
+            // solucion al bug del importe: aceptamos tipo currency y tipo double
+            if (documentoInfo.Fields.TryGetValue("InvoiceTotal", out DocumentField? campoTotal))
             {
-                extraccion.ImporteTotal = (decimal)campoTotal.Value.AsDouble();
+                if (campoTotal.FieldType == DocumentFieldType.Currency)
+                {
+                    extraccion.ImporteTotal = (decimal)campoTotal.Value.AsCurrency().Amount;
+                }
+                else if (campoTotal.FieldType == DocumentFieldType.Double)
+                {
+                    extraccion.ImporteTotal = (decimal)campoTotal.Value.AsDouble();
+                }
             }
 
             // buscamos la fecha de la factura
@@ -61,10 +66,7 @@ public class ServicioExtraccionIA
                 extraccion.FechaEmision = campoFecha.Value.AsDate().UtcDateTime;
             }
             
-            // COMENTAMOS ESTA LÍNEA PARA QUE NO CORTE LA CONEXIÓN
-            // extraccion.DatosRawJSON = JsonSerializer.Serialize(documentoInfo.Fields);
-
-            // le ponemos un texto fijo de momento para que Entity Framework no se queje al guardar en SQL
+            // le ponemos un texto fijo de momento para que entity framework no se queje al guardar en sql
             extraccion.DatosRawJSON = "json desactivado temporalmente";
         }
 

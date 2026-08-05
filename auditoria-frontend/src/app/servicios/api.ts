@@ -6,16 +6,23 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ApiService {
   private http = inject(HttpClient);
-  
-  // revisa que el puerto 5133 es el correcto de la api
-  private apiUrl = 'http://localhost:5133/api/Documentos'; 
+  // url base de la api 
+  private baseUrl = 'http://localhost:5133/api/Documentos';
 
+  // envia el pdf al servidor
   subirDocumento(archivo: File) {
-    // preparamos el archivo para enviarlo
     const formData = new FormData();
     formData.append('archivo', archivo);
+    return this.http.post(`${this.baseUrl}/upload`, formData);
+  }
 
-    // enviamos el pdf al backend
-    return this.http.post(`${this.apiUrl}/upload`, formData);
+  // pide las ultimas facturas procesadas
+  obtenerHistorial() {
+    return this.http.get(`${this.baseUrl}/historial`);
+  }
+
+  // borra todos los datos de prueba
+  limpiarHistorial() {
+    return this.http.delete(`${this.baseUrl}/limpiar`);
   }
 }

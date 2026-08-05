@@ -1,65 +1,135 @@
 <div class="min-h-screen bg-gray-50 flex flex-col items-center p-4 sm:p-10 font-sans text-gray-800">
-  
+
   <!-- cabecera responsive -->
   <div class="w-full max-w-3xl mb-6 sm:mb-8 text-center sm:text-left">
-    <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900">smart compliance hub</h1>
+    <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900">Auditor de Facturas</h1>
     <p class="text-gray-500 mt-1 sm:mt-2 text-xs sm:text-sm">panel de auditoría documental automatizada</p>
   </div>
 
   <!-- contenedor principal -->
   <div class="bg-white p-5 sm:p-8 w-full max-w-3xl border border-gray-200 shadow-sm rounded-lg">
-    
+
     <!-- zona de subida (ahora 100% responsive) -->
-    <div class="flex flex-col items-center border border-dashed border-gray-300 p-6 sm:p-10 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors duration-200 text-center">
-      
-      <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+    <div
+      class="flex flex-col items-center border border-dashed border-gray-300 p-6 sm:p-10 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors duration-200 text-center">
+
+      <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
       </svg>
-      
+
       <!-- input adaptado a movil (se apila en pantallas pequeñas) -->
-      <input 
-        type="file" 
-        (change)="seleccionarArchivo($event)" 
-        accept="application/pdf" 
+      <input type="file" (change)="seleccionarArchivo($event)" accept="application/pdf"
         class="w-full max-w-full text-xs sm:text-sm text-gray-600 mb-6 file:block file:w-full sm:file:inline-block sm:file:w-auto file:mb-3 sm:file:mb-0 file:mr-0 sm:file:mr-4 file:py-2.5 file:px-5 file:rounded-md file:border-0 file:font-medium file:bg-gray-800 file:text-white hover:file:bg-gray-700 cursor-pointer transition-all">
-      
+
       <!-- boton de accion adaptado a movil -->
-      <button 
-        (click)="subir()" 
-        [disabled]="!archivoSeleccionado || cargando"
+      <button (click)="subir()" [disabled]="!archivoSeleccionado || cargando"
         class="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 sm:py-2.5 rounded-md text-sm sm:text-base font-medium shadow-sm hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all">
         {{ cargando ? 'procesando documento...' : 'subir y analizar' }}
       </button>
     </div>
 
+    <!-- facturas de ejemplo -->
+    <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
+      <span>¿no tienes una factura a mano? prueba con estas:</span>
+      <div class="flex gap-3">
+        <a href="/ejemplos/factura-demo-1.pdf" download class="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4-4m4 4V4"></path></svg>
+          demo 1
+        </a>
+        <a href="/ejemplos/factura-demo-2.pdf" download class="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4-4m4 4V4"></path></svg>
+          demo 2
+        </a>
+      </div>
+    </div>
+
     <!-- mensaje de error -->
-    <div *ngIf="error" class="mt-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm text-center sm:text-left">
+    <div *ngIf="error"
+      class="mt-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm text-center sm:text-left">
       {{ error }}
     </div>
 
     <!-- seccion de resultados adaptada -->
     <div *ngIf="resultado" class="mt-8 pt-8 border-t border-gray-200 animate-fade-in">
-      <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 text-center sm:text-left">datos extraídos de la factura</h2>
-      
+      <h2 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 text-center sm:text-left">datos extraídos
+        de la factura</h2>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
-        
+
         <div class="flex flex-col pb-3 border-b border-gray-100">
           <span class="text-[10px] sm:text-xs text-gray-500 uppercase font-medium tracking-wider mb-1">proveedor</span>
-          <span class="text-base sm:text-lg text-gray-900 break-words">{{ resultado.datosIA.proveedor || 'no detectado' }}</span>
+          <span class="text-base sm:text-lg text-gray-900 break-words">{{ resultado.datosIA.proveedor || 'no detectado'
+            }}</span>
         </div>
-        
+
         <div class="flex flex-col pb-3 border-b border-gray-100">
-          <span class="text-[10px] sm:text-xs text-gray-500 uppercase font-medium tracking-wider mb-1">importe total</span>
+          <span class="text-[10px] sm:text-xs text-gray-500 uppercase font-medium tracking-wider mb-1">importe
+            total</span>
           <span class="text-base sm:text-lg text-gray-900">{{ resultado.datosIA.importeTotal }} €</span>
         </div>
 
         <div class="flex flex-col pb-3 border-b border-gray-100 sm:col-span-2">
-          <span class="text-[10px] sm:text-xs text-gray-500 uppercase font-medium tracking-wider mb-1">fecha de emisión</span>
-          <span class="text-base sm:text-lg text-gray-900">{{ resultado.datosIA.fechaEmision | date:'dd/MM/yyyy' }}</span>
+          <span class="text-[10px] sm:text-xs text-gray-500 uppercase font-medium tracking-wider mb-1">fecha de
+            emisión</span>
+          <span class="text-base sm:text-lg text-gray-900">{{ resultado.datosIA.fechaEmision | date:'dd/MM/yyyy'
+            }}</span>
         </div>
 
       </div>
     </div>
 
   </div>
+
+  <!-- seccion del dashboard de historial -->
+  <div class="mt-12 pt-8 border-t border-gray-200 w-full animate-fade-in max-w-3xl">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-base sm:text-lg font-semibold text-gray-900">Historial de Extracciones</h2>
+      
+      <!-- boton de limpiar -->
+      <div class="flex items-center gap-3">
+        <span
+          class="bg-gray-100 text-gray-600 text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full border border-gray-200">
+          Últimos {{ historial.length }} registros
+        </span>
+        <button 
+          *ngIf="historial.length > 0"
+          (click)="limpiarDatos()" 
+          class="text-[10px] sm:text-xs text-red-600 hover:text-red-800 transition-colors font-medium border border-red-200 hover:bg-red-50 px-3 py-1 rounded-md">
+          Limpiar datos
+        </button>
+      </div>
+    </div>
+
+    <!-- tabla responsive -->
+    <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm bg-white">
+      <table class="w-full text-xs sm:text-sm text-left text-gray-500">
+        <thead class="text-[10px] sm:text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th scope="col" class="px-4 sm:px-6 py-3 sm:py-4 font-semibold">ID</th>
+            <th scope="col" class="px-4 sm:px-6 py-3 sm:py-4 font-semibold">Proveedor</th>
+            <th scope="col" class="px-4 sm:px-6 py-3 sm:py-4 font-semibold">Fecha Emisión</th>
+            <th scope="col" class="px-4 sm:px-6 py-3 sm:py-4 font-semibold text-right">Importe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- mensaje si no hay datos -->
+          <tr *ngIf="historial.length === 0" class="bg-white">
+            <td colspan="4" class="px-6 py-8 text-center text-gray-500 text-sm">No hay facturas procesadas todavía.</td>
+          </tr>
+
+          <!-- listado de facturas -->
+          <tr *ngFor="let item of historial" class="bg-white border-b hover:bg-gray-50 transition-colors">
+            <td class="px-4 sm:px-6 py-3 sm:py-4 font-medium text-gray-900">#{{ item.id }}</td>
+            <td class="px-4 sm:px-6 py-3 sm:py-4 truncate max-w-[120px] sm:max-w-xs">{{ item.proveedor || 'Desconocido'
+              }}</td>
+            <td class="px-4 sm:px-6 py-3 sm:py-4">{{ item.fechaEmision | date:'dd/MM/yyyy' }}</td>
+            <td class="px-4 sm:px-6 py-3 sm:py-4 text-right font-medium text-gray-900">{{ item.importeTotal }} €</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
